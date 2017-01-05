@@ -24,11 +24,23 @@ public class Game {
         players = new Player[numberOfPlayers];
         pile = new LinkedList<>();
 
-        for (int x = 0; x < players.length; x++) {
-            players[x] = new Player(x);
-            players[x].dealHidden(deck.nextCard());
-            players[x].dealShown(deck.nextCard());
-            players[x].dealHand(deck.nextCard());
+        for (int i = 1; i <= 3; i++) {
+            for (int x = 0; x < players.length; x++) {
+                if (players[x] == null) players[x] = new Player(x);
+                players[x].dealHidden(deck.dealNextCard());
+            }
+        }
+
+        for (int i = 1; i <= 3; i++) {
+            for (int x = 0; x < players.length; x++) {
+                players[x].dealShown(deck.dealNextCard());
+            }
+        }
+
+        for (int i = 1; i <= 3; i++) {
+            for (int x = 0; x < players.length; x++) {
+                players[x].dealHand(deck.dealNextCard());
+            }
         }
     }
 
