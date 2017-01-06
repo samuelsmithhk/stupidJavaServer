@@ -8,9 +8,9 @@ import java.util.Set;
 /**
  * Created by samuelsmith on 1/3/17.
  */
-public class ValidationUtils {
+class ValidationUtils {
 
-    public static void isValidGame(String game, int numberOfPlayers) {
+    static void isValidGame(String game, int numberOfPlayers) {
         char[] gameArr = game.toCharArray();
 
         //first we need to check if a valid number of players in the game (2, 3, or 4)
@@ -45,14 +45,15 @@ public class ValidationUtils {
                 }
 
             } else {
-                if (c == '?') {
+                if (c == '?' || gameArr[i - 1] == '?') {
                     if (!foundDeck) {
                         //looking at deck
                         foundDeck = true;
                         sb = new StringBuilder();
                     } else {
-                        deck = sb.deleteCharAt(sb.indexOf("?")).toString();
+                        deck = sb.toString();
                         sb = new StringBuilder();
+                        foundDeck = false;
                     }
                 }
             }
@@ -60,7 +61,7 @@ public class ValidationUtils {
             sb.append(c);
         }
 
-        pile = sb.deleteCharAt(sb.indexOf("?")).toString();
+        pile = sb.toString();
 
         //now we need to check if the number of players pulled from the game match the specified number
         if (matchingNow - 1 != numberOfPlayers)
@@ -128,10 +129,58 @@ public class ValidationUtils {
     }
 
     static void isValidDeck(String deck) {
+        Assert.assertTrue("Deck should have at least 1 character" + deck + "]", deck.length() > 0);
+        Assert.assertTrue("Deck can not have more than 34 characters [" + deck + "]", deck.length() <= 34);
+
+        //a valid deck either has 1 or more cards, or one !
+        char[] deckArr = deck.toCharArray();
+
+        if (deckArr.length == 0) {
+            if (deckArr[0] != '!') {
+                try {
+                    Card.fromCharacter(deckArr[0]);
+                } catch (IllegalArgumentException e) {
+                    Assert.fail("deckArr[0] should be ! or a valid card, currently [" + deckArr[0] + "]");
+                }
+            }
+        } else {
+            for (int i = 0; i < deckArr.length; i++) {
+                try {
+                    Card.fromCharacter(deckArr[i]);
+                } catch (IllegalArgumentException e) {
+                    Assert.fail("deckArr[" + i + "] should be a valid card, currently [" + deckArr[i] + "]");
+                }
+            }
+        }
+
         noDuplicateCards("Deck", deck);
     }
 
     static void isValidPile(String pile) {
+        Assert.assertTrue("Pile must be atleast one character [" + pile + "]", pile.length() > 0);
+        Assert.assertTrue("Pile must not contain more than 52 characters [" + pile + "]", pile.length() <= 52);
+
+        //All characters must be valid cards, or just a single !
+        char[] pileArr = pile.toCharArray();
+
+        if (pileArr.length == 1) {
+            if (pileArr[0] != '!') {
+                try {
+                    Card.fromCharacter(pileArr[0]);
+                } catch (IllegalArgumentException e) {
+                    Assert.fail("pileArr[0] may only contain ! or a valid card character, currently [" + pileArr[0] + "]");
+                }
+            }
+        } else {
+            for (int i = 0; i < pileArr.length; i++) {
+                try {
+                    Card.fromCharacter(pileArr[i]);
+                } catch (IllegalArgumentException e) {
+                    Assert.fail("pileArr[" + i + "] must contain a valid card character, currently [" + pileArr[i] + "]");
+                }
+            }
+        }
+
         noDuplicateCards("Pile", pile);
     }
 

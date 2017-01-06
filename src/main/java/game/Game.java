@@ -56,7 +56,8 @@ public class Game {
 
         sb.append("?").append(deck.toString()).append("?");
 
-        for (Card c : pile) sb.append(c.toString());
+        if (pile.size() == 0) sb.append("!");
+        else for (Card c : pile) sb.append(c.toString());
 
 
         return sb.toString();
