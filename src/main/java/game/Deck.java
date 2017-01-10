@@ -23,6 +23,16 @@ public class Deck {
         }
     }
 
+    public Deck(String deckString) {
+        cards = new LinkedList<>();
+
+        char[] cardsInDeck = deckString.toCharArray();
+
+        for (char c : cardsInDeck) {
+            cards.add(Card.fromCharacter(c));
+        }
+    }
+
     public Card dealNextCard() {
         return cards.poll();
     }

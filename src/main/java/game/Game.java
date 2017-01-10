@@ -15,6 +15,10 @@ public class Game {
         return new Game(numberOfPlayers).toString();
     }
 
+    public static String updateGame(String gameString, int player, char[] cardsToPlay) {
+        return null;
+    }
+
     private final Deck deck;
     private final Player[] players;
     private final Queue<Card> pile;
@@ -40,6 +44,31 @@ public class Game {
         for (int i = 1; i <= 3; i++) {
             for (int x = 0; x < players.length; x++) {
                 players[x].dealHand(deck.dealNextCard());
+            }
+        }
+    }
+
+    private Game(String gameString) {
+        int endOfPlayers = gameString.indexOf('?');
+        int endOfDeck = gameString.lastIndexOf('?');
+        String[] playerStrings = gameString.substring(1, endOfPlayers).split("\\d");
+        players = new Player[playerStrings.length];
+
+        for (int i = 0; i < playerStrings.length; i++) {
+            players[i] = new Player(i, playerStrings[i]);
+        }
+
+        String deckString = gameString.substring(endOfPlayers, endOfDeck);
+        deck = new Deck(deckString);
+
+        String pileString = gameString.substring(endOfPlayers);
+        char[] pileStringArr = pileString.toCharArray();
+
+        pile = new LinkedList<>();
+
+        if (pileStringArr[0] != '!') {
+            for (char c : pileStringArr) {
+                pile.add(Card.fromCharacter(c));
             }
         }
     }
