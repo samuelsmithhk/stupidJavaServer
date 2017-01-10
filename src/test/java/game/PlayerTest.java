@@ -68,9 +68,7 @@ public class PlayerTest {
 
         int c = 0;
 
-        while (p.dealHidden(d.dealNextCard())) {
-            c++;
-        }
+        while (p.dealHidden(d.dealNextCard())) c++;
 
         Assert.assertTrue("Player did not accept three hidden cards dealt", c == 3);
     }
@@ -82,9 +80,7 @@ public class PlayerTest {
 
         int c = 0;
 
-        while (p.dealShown(d.dealNextCard())) {
-            c++;
-        }
+        while (p.dealShown(d.dealNextCard())) c++;
 
         Assert.assertTrue("Player did not accept three shown cards dealt", c == 3);
     }

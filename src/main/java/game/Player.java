@@ -1,6 +1,7 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Player {
@@ -15,6 +16,26 @@ public class Player {
 
         hidden = new Card[3];
         shown = new Card[3];
+    }
+
+    public Player(int playerNumber, String playerString) {
+        this(playerNumber);
+
+        char[] playerArr = playerString.toCharArray();
+
+        dealHidden(Card.fromCharacter(playerArr[0]));
+        dealHidden(Card.fromCharacter(playerArr[1]));
+        dealHidden(Card.fromCharacter(playerArr[2]));
+
+        dealShown(Card.fromCharacter(playerArr[3]));
+        dealShown(Card.fromCharacter(playerArr[4]));
+        dealShown(Card.fromCharacter(playerArr[5]));
+
+        if (playerArr[6] != '!') {
+            for (int i = 6; i < playerArr.length; i++) {
+                dealHand(Card.fromCharacter(playerArr[i]));
+            }
+        }
     }
 
     public boolean dealHidden(Card card) {
@@ -42,10 +63,6 @@ public class Player {
     public boolean dealHand(Card card) {
         hand.add(card);
         return true;
-    }
-
-    public void pickUp(Card[] cards) {
-
     }
 
     @Override
