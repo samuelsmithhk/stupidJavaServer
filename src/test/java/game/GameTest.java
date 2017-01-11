@@ -113,4 +113,22 @@ public class GameTest {
         Assert.assertTrue("Should have an error message regarding the different cards trying to be played",
                 gameUpdated.message.contains("power"));
     }
+
+    @Test
+    public void shouldPickUpCardsIfHandLessThanThreeAfterMove() {
+        String game = "20abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        ValidationUtils.isValidGame(game, 2);
+        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        ValidationUtils.isValidGame(gameUpdated.game, 2);
+        ValidationUtils.assertPlayerDoesHaveCards(gameUpdated.game, 0, new char[]{'s'});
+    }
+
+    @Test
+    public void shouldNotPickUpCardsIfHandGreaterThanThreeAfterMove() {
+        String game = "20abcdefghiABC1jklmnopqr?stuvwxyzDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        ValidationUtils.isValidGame(game, 2);
+        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        ValidationUtils.isValidGame(gameUpdated.game, 2);
+        ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'s'});
+    }
 }

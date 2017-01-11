@@ -3,6 +3,9 @@ package game;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by samuelsmith on 1/2/17.
  */
@@ -83,5 +86,59 @@ public class PlayerTest {
         while (p.dealShown(d.dealNextCard())) c++;
 
         Assert.assertTrue("Player did not accept three shown cards dealt", c == 3);
+    }
+
+    @Test
+    public void shouldReturnTrueIfCardInHand() {
+        Player p = new Player(0);
+
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.fromCharacter('a'));
+        cards.add(Card.fromCharacter('b'));
+        cards.add(Card.fromCharacter('c'));
+
+        p.dealHand(cards.get(0));
+        p.dealHand(cards.get(1));
+        p.dealHand(cards.get(2));
+
+        Assert.assertTrue("Player not holding the correct playable cards", p.hasPlayableCards(cards));
+    }
+
+    @Test
+    public void shouldReturnFalseIfCardNotInHand() {
+        Player p = new Player(0);
+
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.fromCharacter('a'));
+        cards.add(Card.fromCharacter('b'));
+        cards.add(Card.fromCharacter('c'));
+
+        p.dealHand(Card.fromCharacter('d'));
+        p.dealHand(Card.fromCharacter('e'));
+        p.dealHand(Card.fromCharacter('f'));
+
+        Assert.assertFalse("Player not holding the correct playable cards", p.hasPlayableCards(cards));
+    }
+
+    @Test
+    public void shouldRemoveCardsFromHand() {
+        Player p = new Player(0);
+
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.fromCharacter('a'));
+        cards.add(Card.fromCharacter('b'));
+        cards.add(Card.fromCharacter('c'));
+
+        p.dealHand(cards.get(0));
+        p.dealHand(cards.get(1));
+        p.dealHand(cards.get(2));
+
+        List<Card> toRemove = new ArrayList<>();
+        toRemove.add(cards.get(1));
+        p.removePlayableCards(toRemove);
+        cards.remove(1);
+
+        Assert.assertTrue("Player not holding the correct playable cards", p.hasPlayableCards(cards));
+        Assert.assertFalse("Player not holding the correct playable cards", p.hasPlayableCards(toRemove));
     }
 }

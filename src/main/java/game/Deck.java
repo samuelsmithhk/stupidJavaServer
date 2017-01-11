@@ -41,6 +41,10 @@ public class Deck {
         return cards.peek();
     }
 
+    public int size() {
+        return cards.size();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -51,5 +55,4 @@ public class Deck {
 
         return sb.toString();
     }
-
 }

@@ -196,38 +196,46 @@ class ValidationUtils {
     }
 
     public static void assertCardsAreOnPile(String game, char[] toCheck) {
-        int pileStarts = game.lastIndexOf('?');
-        char[] pileArr = game.substring(pileStarts + 1).toCharArray();
-
-        int found = 0;
-
-        for (char tc : toCheck) {
-            boolean foundB = false;
-            for (char pc : pileArr) {
-                if (pc == tc) {
-                    found++;
-                    foundB = true;
-                    break;
-                }
-            }
-
-            if (!foundB) Assert.fail("Card [" + tc + "] not in pile");
-        }
+        int pileStarts = game.lastIndexOf('?') + 1;
+        assertCardsInPlace(true, game, pileStarts, -1, toCheck);
     }
 
     public static void assertPlayerDoesNotHaveCards(String game, int playerNumber, char[] toCheck) {
-        int playerStarts = game.indexOf(playerNumber) + 1;
-        int playerEnds = game.indexOf(playerNumber + 1);
-        if (playerEnds == -1) playerEnds = game.indexOf('?');
-        Assert.assertTrue("Invalid game string", playerEnds != -1 && playerStarts != -1);
-
-        char[] playerArr = game.substring(playerStarts, playerEnds).toCharArray();
-
-        for (char pc : playerArr) {
-            for (char tc : toCheck) {
-                Assert.assertFalse("Player [" + playerNumber +"] has a card they shouldn't", pc == tc);
-            }
-        }
+        assertPlayerCardsInPlace(false, game, playerNumber, toCheck);
     }
 
+    public static void assertPlayerDoesHaveCards(String game, int playerNumber, char[] toCheck) {
+        assertPlayerCardsInPlace(true, game, playerNumber, toCheck);
+    }
+
+    private static void assertPlayerCardsInPlace(boolean has, String game, int playerNumber, char[] toCheck) {
+        int startRange = game.indexOf(String.valueOf(playerNumber)) + 1;
+        int endRange = game.indexOf(String.valueOf(playerNumber + 1));
+        if (endRange == -1) endRange = game.indexOf('?');
+        Assert.assertTrue("Invalid game string", endRange != -1 && startRange != -1);
+        assertCardsInPlace(has, game, startRange, endRange, toCheck);
+    }
+
+    private static void assertCardsInPlace(boolean has, String game, int startRange, int endRange, char[] one) {
+        char[] two;
+        if (endRange != -1) two = game.substring(startRange, endRange).toCharArray();
+        else two = game.substring(startRange).toCharArray();
+
+        int found = 0;
+
+        for (char o : one) {
+            for (char t : two) {
+                if (has) {
+                    if (o == t) found++;
+                }
+                else Assert.assertFalse("Matches card erroneously", o == t);
+            }
+        }
+
+        if (has) {
+            Assert.assertTrue("Failed to match all cards",
+                    found == one.length);
+        }
+
+    }
 }
