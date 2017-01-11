@@ -73,6 +73,10 @@ public class Player {
         return hand.containsAll(cards);
     }
 
+    public int getNumberOfPlayableCards() {
+        return hand.size();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
