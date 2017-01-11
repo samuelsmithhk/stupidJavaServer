@@ -189,7 +189,7 @@ class ValidationUtils {
         char[] playerArr = toCheck.toCharArray();
 
         for (Character c : playerArr) {
-            if (alreadyFound.contains(c))
+            if (c != '!' && alreadyFound.contains(c))
                 Assert.fail(x + " contains a duplicate card: [" + Card.fromCharacter(c).getCardValue() + "]");
             alreadyFound.add(c);
         }
@@ -210,6 +210,22 @@ class ValidationUtils {
 
     private static void assertPlayerCardsInPlace(boolean has, String game, int playerNumber, char[] toCheck) {
         int startRange = game.indexOf(String.valueOf(playerNumber)) + 1;
+        int endRange = game.indexOf(String.valueOf(playerNumber + 1));
+        if (endRange == -1) endRange = game.indexOf('?');
+        Assert.assertTrue("Invalid game string", endRange != -1 && startRange != -1);
+        assertCardsInPlace(has, game, startRange, endRange, toCheck);
+    }
+
+    public static void assertInHand(String game, int playerNumber, char[] toCheck) {
+        assertHand(true, game, playerNumber, toCheck);
+    }
+
+    public static void assertNotInHand(String game, int playerNumber, char[] toCheck) {
+        assertHand(false, game, playerNumber, toCheck);
+    }
+
+    private static void assertHand(boolean has, String game, int playerNumber, char[] toCheck) {
+        int startRange = game.indexOf(String.valueOf(playerNumber)) + 7;
         int endRange = game.indexOf(String.valueOf(playerNumber + 1));
         if (endRange == -1) endRange = game.indexOf('?');
         Assert.assertTrue("Invalid game string", endRange != -1 && startRange != -1);

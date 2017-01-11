@@ -131,4 +131,26 @@ public class GameTest {
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'s'});
     }
+
+    @Test
+    public void shouldPickUpFromShownIfDeckIsEmpty() {
+        String game = "20abcdefg1jklmnopqr?!?!";
+        ValidationUtils.isValidGame(game, 2);
+        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        ValidationUtils.isValidGame(gameUpdated.game, 2);
+        ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g'});
+        ValidationUtils.assertInHand(gameUpdated.game, 0, new char[]{'d', 'e', 'f'});
+    }
+
+    @Test
+    public void shouldNotPickUpFromShownIfAtLeastOneCardIsInDeck() {
+        String game = "20abcdefgti1jklmnopqr?s?!";
+        ValidationUtils.isValidGame(game, 2);
+        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g','t'});
+        ValidationUtils.isValidGame(gameUpdated.game, 2);
+        ValidationUtils.assertCardsAreOnPile(gameUpdated.game, new char[]{'g'});
+        ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g','t'});
+        ValidationUtils.assertInHand(gameUpdated.game, 0, new char[]{'s'});
+        ValidationUtils.assertNotInHand(gameUpdated.game, 0, new char[]{'d', 'e', 'f'});
+    }
 }
