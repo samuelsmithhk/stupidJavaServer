@@ -194,4 +194,40 @@ class ValidationUtils {
             alreadyFound.add(c);
         }
     }
+
+    public static void assertCardsAreOnPile(String game, char[] toCheck) {
+        int pileStarts = game.lastIndexOf('?');
+        char[] pileArr = game.substring(pileStarts + 1).toCharArray();
+
+        int found = 0;
+
+        for (char tc : toCheck) {
+            boolean foundB = false;
+            for (char pc : pileArr) {
+                if (pc == tc) {
+                    found++;
+                    foundB = true;
+                    break;
+                }
+            }
+
+            if (!foundB) Assert.fail("Card [" + tc + "] not in pile");
+        }
+    }
+
+    public static void assertPlayerDoesNotHaveCards(String game, int playerNumber, char[] toCheck) {
+        int playerStarts = game.indexOf(playerNumber) + 1;
+        int playerEnds = game.indexOf(playerNumber + 1);
+        if (playerEnds == -1) playerEnds = game.indexOf('?');
+        Assert.assertTrue("Invalid game string", playerEnds != -1 && playerStarts != -1);
+
+        char[] playerArr = game.substring(playerStarts, playerEnds).toCharArray();
+
+        for (char pc : playerArr) {
+            for (char tc : toCheck) {
+                Assert.assertFalse("Player [" + playerNumber +"] has a card they shouldn't", pc == tc);
+            }
+        }
+    }
+
 }
