@@ -10,9 +10,15 @@ import java.util.Set;
  */
 public class Card {
 
+    enum Suite {
+        DIAMOND, HEART, CLUB, SPADE
+    }
+
     private static final Map<Character, String> valueMap;
 
     public static Card fromCharacter(char c) {
+        if (c == '!') return null;
+
         if (!valueMap.containsKey(c))
             throw new IllegalArgumentException("No card exists for char [" + c + "]");
 
@@ -22,20 +28,55 @@ public class Card {
 
     private final char value;
     private final String cardValue;
+    private final int power;
+    private final Suite suite;
 
 
     private Card(char value, String cardValue) {
         this.value = value;
         this.cardValue = cardValue;
+
+        if (cardValue.contains("Diamonds")) suite = Suite.DIAMOND;
+        else if (cardValue.contains("Hearts")) suite = Suite.HEART;
+        else if (cardValue.contains("Clubs")) suite = Suite.CLUB;
+        else suite = Suite.SPADE;
+
+        switch (cardValue.substring(0, 1)) {
+            case "3" : power = 0; break;
+            case "4" : power = 1; break;
+            case "5" : power = 2; break;
+            case "6" : power = 3; break;
+            case "7" : power = 4; break;
+            case "8" : power = 5; break;
+            case "9" : power = 6; break;
+            case "J" : power = 7; break;
+            case "Q" : power = 8; break;
+            case "K" : power = 9; break;
+            default: power = 10;
+        }
     }
 
     public String getCardValue() {
         return cardValue;
     }
 
+    public int getPower() {
+        return power;
+    }
+    
     @Override
     public String toString() {
         return new String(new char[]{value});
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Card) {
+            Card other = (Card) o;
+            return this.value == other.value;
+        }
+
+        return false;
     }
 
     public static Set<Character> getAllCardKeys() {

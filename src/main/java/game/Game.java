@@ -1,6 +1,8 @@
 package game;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -13,6 +15,12 @@ public class Game {
         if (numberOfPlayers > 4) throw new IllegalArgumentException("A game may have no more than 4 players");
 
         return new Game(numberOfPlayers).toString();
+    }
+
+    public static InstructionResult updateGame(String gameString, int player, char[] cardsToPlay) {
+        Game g = new Game(gameString);
+        String message = g.instruction(player, cardsToPlay);
+        return new InstructionResult(g.toString(), message);
     }
 
     private final Deck deck;
@@ -44,6 +52,65 @@ public class Game {
         }
     }
 
+    private Game(String gameString) {
+        int endOfPlayers = gameString.indexOf('?');
+        int endOfDeck = gameString.lastIndexOf('?');
+        String[] playerStrings = gameString.substring(2, endOfPlayers).split("[0-9]");
+        players = new Player[playerStrings.length];
+
+        for (int i = 0; i < playerStrings.length; i++) {
+            players[i] = new Player(i, playerStrings[i]);
+        }
+
+        String deckString = gameString.substring(endOfPlayers + 1, endOfDeck);
+        deck = new Deck(deckString);
+
+        String pileString = gameString.substring(endOfDeck + 1);
+        char[] pileStringArr = pileString.toCharArray();
+
+        pile = new LinkedList<>();
+
+        if (pileStringArr[0] != '!') {
+            for (char c : pileStringArr) {
+                pile.add(Card.fromCharacter(c));
+            }
+        }
+    }
+
+    private String instruction(int player, char[] cardsToPlay) {
+        Player p = players[player];
+        List<Card> cardsConverted = new ArrayList<>();
+
+        //are all cards playable in single move (ie, all same power)
+        int power = -1;
+
+        for (char c : cardsToPlay) {
+            Card card = Card.fromCharacter(c);
+
+            if (card != null) {
+                cardsConverted.add(card);
+                int cPower = card.getPower();
+
+                if (power != -1)
+                    if (cPower != power) return "Move cannot be made: not all cards are of equal power";
+
+                power = cPower;
+            }
+            else return "Move cannot be made: trying to play invalid card";
+        }
+
+        if (p.hasPlayableCards(cardsConverted)) { //to prevent cheating
+
+            if (pile.size() != 0 && pile.peek().getPower() > power) {
+                return "Move cannot be made: card is not powerful enough to add to pile";
+            }
+
+            p.removePlayableCards(cardsConverted);
+            pile.addAll(cardsConverted);
+            return "Success";
+        } else return "Move cannot be made: player does not hold the cards trying to be played";
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(55 + players.length);
@@ -63,4 +130,12 @@ public class Game {
         return sb.toString();
     }
 
+    public static class InstructionResult {
+        public final String game, message;
+
+        public InstructionResult(String game, String message) {
+            this.game = game;
+            this.message = message;
+        }
+    }
 }
