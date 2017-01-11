@@ -65,6 +65,14 @@ public class Player {
         return true;
     }
 
+    public boolean removePlayableCards(Collection<Card> cards) {
+        return hand.removeAll(cards);
+    }
+
+    public boolean hasPlayableCards(Collection<Card> cards) {
+        return hand.containsAll(cards);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

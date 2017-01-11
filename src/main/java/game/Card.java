@@ -63,14 +63,20 @@ public class Card {
     public int getPower() {
         return power;
     }
-
-    public Suite getSuite() {
-        return suite;
-    }
-
+    
     @Override
     public String toString() {
         return new String(new char[]{value});
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Card) {
+            Card other = (Card) o;
+            return this.value == other.value;
+        }
+
+        return false;
     }
 
     public static Set<Character> getAllCardKeys() {
