@@ -28,8 +28,10 @@ public class Deck {
 
         char[] cardsInDeck = deckString.toCharArray();
 
-        for (char c : cardsInDeck) {
-            cards.add(Card.fromCharacter(c));
+        if (cardsInDeck[0] != '!') {
+            for (char c : cardsInDeck) {
+                cards.add(Card.fromCharacter(c));
+            }
         }
     }
 
@@ -45,12 +47,20 @@ public class Deck {
         return cards.size();
     }
 
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (Card c :cards) {
-            sb.append(c.toString());
+        if (cards.size() != 0) {
+            for (Card c :cards) {
+                sb.append(c.toString());
+            }
+        } else {
+            sb.append("!");
         }
 
         return sb.toString();

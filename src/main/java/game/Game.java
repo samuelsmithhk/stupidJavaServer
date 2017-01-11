@@ -108,7 +108,17 @@ public class Game {
             p.removePlayableCards(cardsConverted);
             pile.addAll(cardsConverted);
 
-            while (p.getNumberOfPlayableCards() < 3) p.dealHand(deck.dealNextCard());
+            if (deck.isEmpty()) {
+                if (p.getNumberOfPlayableCards() == 0) {
+                    p.pickUpShownCards();
+                }
+            } else {
+                while (p.getNumberOfPlayableCards() < 3) {
+                    Card c = deck.dealNextCard();
+                    if (c != null) p.dealHand(c);
+                    else break;
+                }
+            }
 
             return "Success";
         } else return "Move cannot be made: player does not hold the cards trying to be played";

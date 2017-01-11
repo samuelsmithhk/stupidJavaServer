@@ -65,6 +65,13 @@ public class Player {
         return true;
     }
 
+    public void pickUpShownCards() {
+        for (int i = 0; i <= 2; i++) {
+            if (shown[i] != null) dealHand(shown[i]);
+            shown[i] = null;
+        }
+    }
+
     public boolean removePlayableCards(Collection<Card> cards) {
         return hand.removeAll(cards);
     }
