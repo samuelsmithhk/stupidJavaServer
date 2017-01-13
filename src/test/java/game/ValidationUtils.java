@@ -18,10 +18,14 @@ class ValidationUtils {
         if (players <  2 || players > 4)
             Assert.fail("Not a valid number of players in game string [" + players + "]");
 
-
         //is this number equal to the specified number?
         if (players != numberOfPlayers)
             Assert.fail("Number of players [" + players + "] not equal to specified [" + numberOfPlayers + "]");
+
+        //is the current player within the range of allowed players?
+        int currentPlayer = Character.getNumericValue(gameArr[1]);
+        if (currentPlayer > numberOfPlayers || currentPlayer < 0)
+            Assert.fail("The current player is not within the range of allowed players");
 
         //now we need to pull out the players, deck, and pile from the game string
         int matchingNow = 0;
@@ -31,7 +35,7 @@ class ValidationUtils {
         String deck = "", pile = "";
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 1; i < game.length(); i++) {
+        for (int i = 2; i < game.length(); i++) {
             char c = gameArr[i];
 
             if (matchingNow <= numberOfPlayers) {
@@ -200,6 +204,11 @@ class ValidationUtils {
         assertCardsInPlace(true, game, pileStarts, -1, toCheck);
     }
 
+    public static void assertCardsAreNotOnPile(String game, char[] toCheck) {
+        int pileStarts = game.lastIndexOf('?') + 1;
+        assertCardsInPlace(false, game, pileStarts, -1, toCheck);
+    }
+
     public static void assertPlayerDoesNotHaveCards(String game, int playerNumber, char[] toCheck) {
         assertPlayerCardsInPlace(false, game, playerNumber, toCheck);
     }
@@ -209,8 +218,8 @@ class ValidationUtils {
     }
 
     private static void assertPlayerCardsInPlace(boolean has, String game, int playerNumber, char[] toCheck) {
-        int startRange = game.indexOf(String.valueOf(playerNumber)) + 1;
-        int endRange = game.indexOf(String.valueOf(playerNumber + 1));
+        int startRange = game.substring(2).indexOf(String.valueOf(playerNumber)) + 3;
+        int endRange = game.substring(2).indexOf(String.valueOf(playerNumber + 1)) + 2;
         if (endRange == -1) endRange = game.indexOf('?');
         Assert.assertTrue("Invalid game string", endRange != -1 && startRange != -1);
         assertCardsInPlace(has, game, startRange, endRange, toCheck);
@@ -225,8 +234,8 @@ class ValidationUtils {
     }
 
     private static void assertHand(boolean has, String game, int playerNumber, char[] toCheck) {
-        int startRange = game.indexOf(String.valueOf(playerNumber)) + 7;
-        int endRange = game.indexOf(String.valueOf(playerNumber + 1));
+        int startRange = game.substring(2).indexOf(String.valueOf(playerNumber)) + 9;
+        int endRange = game.substring(2).indexOf(String.valueOf(playerNumber + 1)) + 2;
         if (endRange == -1) endRange = game.indexOf('?');
         Assert.assertTrue("Invalid game string", endRange != -1 && startRange != -1);
         assertCardsInPlace(has, game, startRange, endRange, toCheck);

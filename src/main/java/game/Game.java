@@ -26,6 +26,7 @@ public class Game {
     private final Deck deck;
     private final Player[] players;
     private final Queue<Card> pile;
+    private int currentPlayer = 0;
 
     private Game(int numberOfPlayers) {
         deck = new Deck();
@@ -53,9 +54,10 @@ public class Game {
     }
 
     private Game(String gameString) {
+        currentPlayer = Character.getNumericValue(gameString.charAt(1));
         int endOfPlayers = gameString.indexOf('?');
         int endOfDeck = gameString.lastIndexOf('?');
-        String[] playerStrings = gameString.substring(2, endOfPlayers).split("[0-9]");
+        String[] playerStrings = gameString.substring(3, endOfPlayers).split("[0-9]");
         players = new Player[playerStrings.length];
 
         for (int i = 0; i < playerStrings.length; i++) {
@@ -78,8 +80,12 @@ public class Game {
     }
 
     private String instruction(int player, char[] cardsToPlay) {
+        if (player != currentPlayer) return "Move cannot be made: not the player's turn";
+
         Player p = players[player];
         List<Card> cardsConverted = new ArrayList<>();
+
+        if (cardsToPlay.length == 0) return "Success";
 
         //are all cards playable in single move (ie, all same power)
         int power = -1;
@@ -120,6 +126,9 @@ public class Game {
                 }
             }
 
+            if (currentPlayer < players.length) currentPlayer += 1;
+            else currentPlayer = 0;
+
             return "Success";
         } else return "Move cannot be made: player does not hold the cards trying to be played";
     }
@@ -129,6 +138,7 @@ public class Game {
         StringBuilder sb = new StringBuilder(55 + players.length);
 
         sb.append(players.length);
+        sb.append(currentPlayer);
 
         for (Player p : players) {
             sb.append(p.toString());

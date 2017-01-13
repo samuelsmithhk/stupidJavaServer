@@ -41,7 +41,7 @@ public class GameTest {
 
     @Test
     public void shouldCreateCorrectGameFromString() {
-        String game = "20abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -51,7 +51,7 @@ public class GameTest {
 
     @Test
     public void shouldAllowLegalMoveNoCardsOnPile() {
-        String game = "20abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -62,7 +62,7 @@ public class GameTest {
 
     @Test
     public void shouldAllowLegalMoveCardsOnPile() {
-        String game = "20abcdefAhi1jklmnopqr?stuvwxyzBCDEFGHIJKLMNOPQRSTUVWXYZ?g";
+        String game = "200abcdefAhi1jklmnopqr?stuvwxyzBCDEFGHIJKLMNOPQRSTUVWXYZ?g";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'h'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -73,7 +73,7 @@ public class GameTest {
 
     @Test
     public void shouldAllowLegalMoveMultipleCards() {
-        String game = "20abcdefgti1jklmnopqr?shuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "200abcdefgti1jklmnopqr?shuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g','t'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -84,7 +84,7 @@ public class GameTest {
 
     @Test
     public void shouldBlockIllegalMoveWeakerCardThanPile() {
-        String game = "20abcdefgAi1jklmnopqr?stuvwxyzBCDEFGHIJKLMNOPQRSTUVWXYZ?h";
+        String game = "200abcdefgAi1jklmnopqr?stuvwxyzBCDEFGHIJKLMNOPQRSTUVWXYZ?h";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -96,7 +96,7 @@ public class GameTest {
 
     @Test
     public void shouldBlockIllegalMovePlayerDoesNotHaveCard() {
-        String game = "20abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'m'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -106,7 +106,7 @@ public class GameTest {
 
     @Test
     public void shouldBlockIllegalMoveTwoDifferentCardsInOnePlay() {
-        String game = "20abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g', 'h'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -116,7 +116,7 @@ public class GameTest {
 
     @Test
     public void shouldPickUpCardsIfHandLessThanThreeAfterMove() {
-        String game = "20abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -125,7 +125,7 @@ public class GameTest {
 
     @Test
     public void shouldNotPickUpCardsIfHandGreaterThanThreeAfterMove() {
-        String game = "20abcdefghiABC1jklmnopqr?stuvwxyzDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "200abcdefghiABC1jklmnopqr?stuvwxyzDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -134,7 +134,7 @@ public class GameTest {
 
     @Test
     public void shouldPickUpFromShownIfDeckIsEmpty() {
-        String game = "20abcdefg1jklmnopqr?!?!";
+        String game = "200abcdefg1jklmnopqr?!?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -144,7 +144,7 @@ public class GameTest {
 
     @Test
     public void shouldNotPickUpFromShownIfAtLeastOneCardIsInDeck() {
-        String game = "20abcdefgti1jklmnopqr?s?!";
+        String game = "200abcdefgti1jklmnopqr?s?!";
         ValidationUtils.isValidGame(game, 2);
         Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g','t'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
@@ -152,5 +152,16 @@ public class GameTest {
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g','t'});
         ValidationUtils.assertInHand(gameUpdated.game, 0, new char[]{'s'});
         ValidationUtils.assertNotInHand(gameUpdated.game, 0, new char[]{'d', 'e', 'f'});
+    }
+
+    @Test
+    public void shouldNotAllowAPlayerToMoveWhenItIsNotTheirTurn() {
+        String game = "210abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        ValidationUtils.isValidGame(game, 2);
+        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        ValidationUtils.isValidGame(gameUpdated.game, 2);
+        ValidationUtils.assertCardsAreNotOnPile(gameUpdated.game, new char[]{'g'});
+        ValidationUtils.assertPlayerDoesHaveCards(gameUpdated.game, 0, new char[]{'g'});
+        Assert.assertTrue("Should have error message regarding incorrect player", gameUpdated.message.contains("turn"));
     }
 }
