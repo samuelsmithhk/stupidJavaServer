@@ -72,12 +72,43 @@ public class Player {
         }
     }
 
+    public void pickUpShownCards(List<Card> shownToPickUp) {
+        for (Card c : shownToPickUp) pickUpShownCard(c);
+    }
+
+    public void pickUpShownCard(Card c) {
+        if (hasShownCard(c)) {
+            for (int i = 0; i < 3; i++) {
+                if (shown[i].equals(c)) {
+                    dealHand(c);
+                    shown[i] = null;
+                }
+            }
+        }
+    }
+
     public boolean removePlayableCards(Collection<Card> cards) {
         return hand.removeAll(cards);
     }
 
     public boolean hasPlayableCards(Collection<Card> cards) {
         return hand.containsAll(cards);
+    }
+
+    public boolean hasShownCard(Card card) {
+        for (int i = 0; i < 3; i++) {
+            if (shown[i].equals(card)) return true;
+        }
+
+        return false;
+    }
+
+    public boolean hasShownCards(List<Card> shownToFind) {
+        for (Card c : shownToFind) {
+            if (!hasShownCard(c)) return false;
+        }
+
+        return true;
     }
 
     public int getNumberOfPlayableCards() {

@@ -141,4 +141,36 @@ public class PlayerTest {
         Assert.assertTrue("Player not holding the correct playable cards", p.hasPlayableCards(cards));
         Assert.assertFalse("Player not holding the correct playable cards", p.hasPlayableCards(toRemove));
     }
+
+    @Test
+    public void shouldReturnTrueForCardsInShown() {
+        Player p = new Player(0);
+
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.fromCharacter('a'));
+        cards.add(Card.fromCharacter('b'));
+        cards.add(Card.fromCharacter('c'));
+
+        p.dealShown(cards.get(0));
+        p.dealShown(cards.get(1));
+        p.dealShown(cards.get(2));
+
+        Assert.assertTrue("Player doesn't have correct cards in shown", p.hasShownCards(cards));
+    }
+
+    @Test
+    public void shouldReturnFalseForCardsNotInShown() {
+        Player p = new Player(0);
+
+        List<Card> cards = new ArrayList<>();
+        cards.add(Card.fromCharacter('a'));
+        cards.add(Card.fromCharacter('b'));
+        cards.add(Card.fromCharacter('c'));
+
+        p.dealShown(Card.fromCharacter('d'));
+        p.dealShown(Card.fromCharacter('e'));
+        p.dealShown(Card.fromCharacter('f'));
+
+        Assert.assertFalse("Player doesn't have correct cards in shown", p.hasShownCards(cards));
+    }
 }

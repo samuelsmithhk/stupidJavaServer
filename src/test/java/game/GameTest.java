@@ -41,19 +41,20 @@ public class GameTest {
 
     @Test
     public void shouldCreateCorrectGameFromString() {
-        String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, -1, new char[]{});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         Assert.assertTrue("Game strings changed between deserialization and serialization", game.equals(gameUpdated.game));
-        Assert.assertEquals("Should have success message", gameUpdated.message, "Success");
+        Assert.assertTrue("Should have a message regarding that the game has not started yet",
+                gameUpdated.message.contains("started"));
     }
 
     @Test
     public void shouldAllowLegalMoveNoCardsOnPile() {
         String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertCardsAreOnPile(gameUpdated.game, new char[]{'g'});
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g'});
@@ -64,7 +65,7 @@ public class GameTest {
     public void shouldAllowLegalMoveCardsOnPile() {
         String game = "200abcdefAhi1jklmnopqr?stuvwxyzBCDEFGHIJKLMNOPQRSTUVWXYZ?g";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'h'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'h'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertCardsAreOnPile(gameUpdated.game, new char[]{'g','h'});
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g','h'});
@@ -75,7 +76,7 @@ public class GameTest {
     public void shouldAllowLegalMoveMultipleCards() {
         String game = "200abcdefgti1jklmnopqr?shuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g','t'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g','t'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertCardsAreOnPile(gameUpdated.game, new char[]{'g'});
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g','t'});
@@ -83,10 +84,19 @@ public class GameTest {
     }
 
     @Test
+    public void shouldBlockMoveIfGameHasNotYetStarted() {
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        ValidationUtils.isValidGame(game, 2);
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g'});
+        Assert.assertTrue("Should not allow move as the game has not yet started",
+                gameUpdated.message.contains("game has not started yet"));
+    }
+
+    @Test
     public void shouldBlockIllegalMoveWeakerCardThanPile() {
         String game = "200abcdefgAi1jklmnopqr?stuvwxyzBCDEFGHIJKLMNOPQRSTUVWXYZ?h";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertCardsAreOnPile(gameUpdated.game, new char[]{'h'});
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'h'});
@@ -98,7 +108,7 @@ public class GameTest {
     public void shouldBlockIllegalMovePlayerDoesNotHaveCard() {
         String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'m'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'m'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         Assert.assertTrue("Should have an error message regarding player's possession of card",
                 gameUpdated.message.contains("hold"));
@@ -108,7 +118,7 @@ public class GameTest {
     public void shouldBlockIllegalMoveTwoDifferentCardsInOnePlay() {
         String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g', 'h'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g', 'h'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         Assert.assertTrue("Should have an error message regarding the different cards trying to be played",
                 gameUpdated.message.contains("power"));
@@ -118,7 +128,7 @@ public class GameTest {
     public void shouldPickUpCardsIfHandLessThanThreeAfterMove() {
         String game = "200abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertPlayerDoesHaveCards(gameUpdated.game, 0, new char[]{'s'});
     }
@@ -127,7 +137,7 @@ public class GameTest {
     public void shouldNotPickUpCardsIfHandGreaterThanThreeAfterMove() {
         String game = "200abcdefghiABC1jklmnopqr?stuvwxyzDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'s'});
     }
@@ -136,7 +146,7 @@ public class GameTest {
     public void shouldPickUpFromShownIfDeckIsEmpty() {
         String game = "200abcdefg1jklmnopqr?!?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g'});
         ValidationUtils.assertInHand(gameUpdated.game, 0, new char[]{'d', 'e', 'f'});
@@ -146,7 +156,7 @@ public class GameTest {
     public void shouldNotPickUpFromShownIfAtLeastOneCardIsInDeck() {
         String game = "200abcdefgti1jklmnopqr?s?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g','t'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g','t'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertCardsAreOnPile(gameUpdated.game, new char[]{'g'});
         ValidationUtils.assertPlayerDoesNotHaveCards(gameUpdated.game, 0, new char[]{'g','t'});
@@ -158,10 +168,85 @@ public class GameTest {
     public void shouldNotAllowAPlayerToMoveWhenItIsNotTheirTurn() {
         String game = "210abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
         ValidationUtils.isValidGame(game, 2);
-        Game.InstructionResult gameUpdated = Game.updateGame(game, 0, new char[]{'g'});
+        Game.InstructionResult gameUpdated = Game.makeMove(game, 0, new char[]{'g'});
         ValidationUtils.isValidGame(gameUpdated.game, 2);
         ValidationUtils.assertCardsAreNotOnPile(gameUpdated.game, new char[]{'g'});
         ValidationUtils.assertPlayerDoesHaveCards(gameUpdated.game, 0, new char[]{'g'});
         Assert.assertTrue("Should have error message regarding incorrect player", gameUpdated.message.contains("turn"));
+    }
+
+    @Test
+    public void shouldCreateGameThatHasNotStarted() {
+        String g = Game.createNewGame(3);
+        Assert.assertEquals("Game should not have started", g.charAt(1), '%');
+
+        Game.InstructionResult attemptMove = Game.makeMove(g, 2, new char[0]);
+        Assert.assertTrue("Should contain error message regarding move not allowed because the game has not started",
+                attemptMove.message.contains("game has not started yet"));
+    }
+
+    @Test
+    public void shouldStartGame() {
+        String game = Game.createNewGame(4);
+
+        Game.InstructionResult started = Game.startGame(game);
+        Assert.assertTrue("", started.message.equals("Success"));
+        ValidationUtils.isValidGame(started.game, 4);
+
+        char playerChar = started.game.charAt(1);
+        Assert.assertFalse("Game has not been started", playerChar == '%');
+
+        int playerNum = Character.getNumericValue(playerChar);
+        Game.InstructionResult actual = Game.makeMove(started.game, playerNum, new char[0]);
+
+        Assert.assertFalse("Game should have started", actual.message.contains("started"));
+    }
+
+    @Test
+    public void shouldAllowPlayerToSwitchCards() {
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        Game.InstructionResult switchAttempt = Game.makeSwitch(game, 0, new char[]{'d'}, new char[]{'g'});
+        Assert.assertTrue("Should have success message", switchAttempt.message.equals("Success"));
+
+        ValidationUtils.assertInHand(switchAttempt.game, 0, new char[]{'d', 'h', 'i'});
+        ValidationUtils.assertNotInHand(switchAttempt.game, 0, new char[]{'g'});
+        ValidationUtils.assertOnShown(switchAttempt.game, 0, new char[]{'g', 'e', 'f'});
+        ValidationUtils.assertNotOnShown(switchAttempt.game, 0, new char[]{'d'});
+    }
+
+    @Test
+    public void shouldNotAllowPlayerToSwitchCardsOnceGameHasStarted() {
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        Game.InstructionResult started = Game.startGame(game);
+        Assert.assertTrue("Game should have started", started.message.equals("Success"));
+        Assert.assertTrue("Game should have started", started.game.charAt(1) != '%');
+
+        Game.InstructionResult actual = Game.makeSwitch(started.game, 0, new char[0], new char[0]);
+        Assert.assertTrue("Should have an error message regarding the game already being started",
+                actual.message.contains("game has already been started"));
+    }
+
+    @Test
+    public void shouldNotAllowPlayerToSwitchCardsIfInvalidCards() {
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        Game.InstructionResult switchAttempt = Game.makeSwitch(game, 0, new char[]{'3'}, new char[]{'a'});
+        Assert.assertTrue("Should have error message regarding invalid card",
+                switchAttempt.message.contains("invalid card"));
+    }
+
+    @Test
+    public void shouldNotAllowPlayerToSwitchCardIfPlayerDoesNotHaveCardInHand() {
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        Game.InstructionResult switchAttempt = Game.makeSwitch(game, 0, new char[]{'d'}, new char[]{'m'});
+        Assert.assertTrue("Should have error message regarding not having card in hand",
+                switchAttempt.message.contains("player does not have the cards being switched"));
+    }
+
+    @Test
+    public void shouldNotAllowPlayerToSwitchCardIfPlayerDoesNotHaveCardInShown() {
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        Game.InstructionResult switchAttempt = Game.makeSwitch(game, 0, new char[]{'a'}, new char[]{'g'});
+        Assert.assertTrue("Should have error message regarding not having card in shown",
+                switchAttempt.message.contains("player does not have the cards being switched"));
     }
 }

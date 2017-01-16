@@ -63,6 +63,10 @@ public class Card {
     public int getPower() {
         return power;
     }
+
+    public Suite getSuite() {
+        return suite;
+    }
     
     @Override
     public String toString() {
@@ -71,6 +75,8 @@ public class Card {
 
     @Override
     public boolean equals(Object o) {
+        if (o == null) return false;
+
         if (o instanceof Card) {
             Card other = (Card) o;
             return this.value == other.value;
