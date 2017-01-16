@@ -17,16 +17,28 @@ public class Game {
         return new Game(numberOfPlayers).toString();
     }
 
-    public static InstructionResult updateGame(String gameString, int player, char[] cardsToPlay) {
+    public static InstructionResult makeMove(String gameString, int player, char[] cardsToPlay) {
         Game g = new Game(gameString);
-        String message = g.instruction(player, cardsToPlay);
+        String message = g.move(player, cardsToPlay);
+        return new InstructionResult(g.toString(), message);
+    }
+
+    public static InstructionResult makeSwitch(String gameString, int player, char[] shownToSwitch, char[] handToSwitch) {
+        Game g = new Game(gameString);
+        String message =  g.switchCards(player, shownToSwitch, handToSwitch);
+        return new InstructionResult(g.toString(), message);
+    }
+
+    public static InstructionResult startGame(String gameString) {
+        Game g = new Game(gameString);
+        String message = g.start();
         return new InstructionResult(g.toString(), message);
     }
 
     private final Deck deck;
     private final Player[] players;
     private final Queue<Card> pile;
-    private int currentPlayer = 0;
+    private int currentPlayer = -1;
 
     private Game(int numberOfPlayers) {
         deck = new Deck();
@@ -54,7 +66,9 @@ public class Game {
     }
 
     private Game(String gameString) {
-        currentPlayer = Character.getNumericValue(gameString.charAt(1));
+        if (gameString.charAt(1) == '%') currentPlayer = -1;
+        else currentPlayer = Character.getNumericValue(gameString.charAt(1));
+
         int endOfPlayers = gameString.indexOf('?');
         int endOfDeck = gameString.lastIndexOf('?');
         String[] playerStrings = gameString.substring(3, endOfPlayers).split("[0-9]");
@@ -79,7 +93,8 @@ public class Game {
         }
     }
 
-    private String instruction(int player, char[] cardsToPlay) {
+    private String move(int player, char[] cardsToPlay) {
+        if (currentPlayer == -1) return "Move cannot be made: game has not started yet";
         if (player != currentPlayer) return "Move cannot be made: not the player's turn";
 
         Player p = players[player];
@@ -133,12 +148,58 @@ public class Game {
         } else return "Move cannot be made: player does not hold the cards trying to be played";
     }
 
+    private String switchCards(int player, char[] shownToSwitch, char[] handToSwitch) {
+        if (currentPlayer != -1) return "Switch cannot be completed: game has already been started";
+
+        Player p = players[player];
+        List<Card> shownConverted = new ArrayList<>();
+        List<Card> handConverted = new ArrayList<>();
+
+        for (char s : shownToSwitch) {
+            try {
+                Card sh = Card.fromCharacter(s);
+
+                if (sh != null) shownConverted.add(sh);
+                else return "Switch cannot be completed: invalid card [" + s + "]";
+            } catch (IllegalArgumentException e) {
+                return "Switch cannot be completed: invalid card [" + s + "]";
+            }
+        }
+
+        for (char h : handToSwitch) {
+            try {
+                Card ha = Card.fromCharacter(h);
+
+                if (ha != null) handConverted.add(ha);
+                else return "Switch cannot be completed: invalid card [" + h + "]";
+            } catch (IllegalArgumentException e) {
+                return "Switch cannot be completed: invalid card [" + h + "]";
+            }
+        }
+
+        if (p.hasPlayableCards(handConverted) && p.hasShownCards(shownConverted)) {
+            p.removePlayableCards(handConverted);
+            p.pickUpShownCards(shownConverted);
+            for (Card c : handConverted) p.dealShown(c);
+
+            return "Success";
+        } else return "Switch cannot be completed: player does not have the cards being switched";
+    }
+
+    private String start() {
+        if (currentPlayer != -1) return "Unable to start game: already started";
+        currentPlayer = 0;
+        return "Success";
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(55 + players.length);
 
         sb.append(players.length);
-        sb.append(currentPlayer);
+
+        if (currentPlayer != -1) sb.append(currentPlayer);
+        else sb.append('%');
 
         for (Player p : players) {
             sb.append(p.toString());

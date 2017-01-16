@@ -23,9 +23,11 @@ class ValidationUtils {
             Assert.fail("Number of players [" + players + "] not equal to specified [" + numberOfPlayers + "]");
 
         //is the current player within the range of allowed players?
-        int currentPlayer = Character.getNumericValue(gameArr[1]);
-        if (currentPlayer > numberOfPlayers || currentPlayer < 0)
-            Assert.fail("The current player is not within the range of allowed players");
+        if (gameArr[1] != '%') {
+            int currentPlayer = Character.getNumericValue(gameArr[1]);
+            if (currentPlayer > numberOfPlayers || currentPlayer < 0)
+                Assert.fail("The current player is not within the range of allowed players");
+        }
 
         //now we need to pull out the players, deck, and pile from the game string
         int matchingNow = 0;
@@ -238,6 +240,21 @@ class ValidationUtils {
         int endRange = game.substring(2).indexOf(String.valueOf(playerNumber + 1)) + 2;
         if (endRange == -1) endRange = game.indexOf('?');
         Assert.assertTrue("Invalid game string", endRange != -1 && startRange != -1);
+        assertCardsInPlace(has, game, startRange, endRange, toCheck);
+    }
+
+    public static void assertOnShown(String game, int player, char[] toCheck) {
+        assertShown(true, game, player, toCheck);
+    }
+
+    public static void assertNotOnShown(String game, int player, char[] toCheck) {
+        assertShown(false, game, player, toCheck);
+    }
+
+    private static void assertShown(boolean has, String game, int playerNumber, char[] toCheck) {
+        int startRange = game.substring(2).indexOf(String.valueOf(playerNumber)) + 6;
+        int endRange = startRange + 3;
+        Assert.assertTrue("Invalid game string", startRange != -1);
         assertCardsInPlace(has, game, startRange, endRange, toCheck);
     }
 
