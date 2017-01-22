@@ -1,18 +1,17 @@
 package game;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+
+import java.util.*;
 
 public class Player {
 
     private final int playerNumber;
-    private final List<Card> hand;
+    private final Set<Card> hand;
     private final Card[] hidden, shown;
 
     public Player(int playerNumber) {
         this.playerNumber = playerNumber;
-        hand = new ArrayList<>();
+        hand = new TreeSet<>();
 
         hidden = new Card[3];
         shown = new Card[3];
@@ -36,6 +35,10 @@ public class Player {
                 dealHand(Card.fromCharacter(playerArr[i]));
             }
         }
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
 
     public boolean dealHidden(Card card) {
@@ -113,6 +116,27 @@ public class Player {
 
     public int getNumberOfPlayableCards() {
         return hand.size();
+    }
+
+    public Card getNextWeakestCard(Card previous) {
+
+        Iterator<Card> handIt = hand.iterator();
+
+        if (previous == null) return handIt.next();
+
+        Card c = handIt.next();
+
+        while (c != null) {
+            if (c.equals(previous)) {
+                if (handIt.hasNext()) return handIt.next();
+                else return null;
+            }
+
+            if (handIt.hasNext()) c = handIt.next();
+            else return null;
+        }
+
+        return null;
     }
 
     @Override

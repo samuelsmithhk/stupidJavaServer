@@ -1,6 +1,7 @@
 package game;
 
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +9,7 @@ import java.util.Set;
 /**
  * Created by samuelsmith on 1/2/17.
  */
-public class Card {
+public class Card implements Comparable<Card>{
 
     enum Suite {
         DIAMOND, HEART, CLUB, SPADE
@@ -83,6 +84,12 @@ public class Card {
         }
 
         return false;
+    }
+
+    @Override
+    public int compareTo(Card o) {
+        if (power == 10 && o.getPower() == 10) return value - o.value;
+        return power - o.getPower();
     }
 
     public static Set<Character> getAllCardKeys() {

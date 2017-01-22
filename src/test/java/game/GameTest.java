@@ -249,4 +249,55 @@ public class GameTest {
         Assert.assertTrue("Should have error message regarding not having card in shown",
                 switchAttempt.message.contains("player does not have the cards being switched"));
     }
+
+
+    @Test
+    public void shouldStartGameWithPlayerWithLowestCardSelected() {
+        //player 0 has 7 of diamonds as lowest card
+        //player 1 has 3 of hearts as lowest card
+        //should pick player 1
+        String game = "2%0abcdefghi1jklmnopqr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        Game.InstructionResult started = Game.startGame(game);
+        Assert.assertTrue("Did not correctly select player with weakest hand", started.game.charAt(1) == '1');
+    }
+
+    @Test
+    public void shouldStartGameWithPlayerWithLowestSecondCardWhenDrawOnLowestCard() {
+        //player 0 has 3 of diamonds as lowest card
+        //player 0 has 4 of hearts as second weakest card
+        //player 1 has 3 of hearts as lowest card
+        //player 1 has 8 of diamonds as second weakest card
+        //should pick player 0
+        String game = "2%0abgdefcqi1jklmnophr?stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!";
+        Game.InstructionResult started = Game.startGame(game);
+        Assert.assertTrue("Did not correctly select player with weakest hand", started.game.charAt(1) == '0');
+    }
+
+    @Test
+    public void shouldStartGameWithPlayerWithLowestThirdCardWithDrawOnFirstTwoCards() {
+        //player 0 has 3 of diamonds as lowest card
+        //player 0 has 4 of hearts as second weakest card
+        //player 0 has 8 of spades as strongest card
+        //player 1 has 3 of hearts as lowest card
+        //player 1 has 4 of diamonds as second weakest card
+        //player 1 has 7 of spades as strongest card
+        //should pick player 1
+        String game = "2%0abghefpqU1jklmnocdT?stuvwxyzABCDEFGHIJKLMNOPQRSriVWXYZ?!";
+        Game.InstructionResult started = Game.startGame(game);
+        Assert.assertTrue("Did not correctly select player with weakest hand", started.game.charAt(1) == '1');
+    }
+
+    @Test
+    public void shouldStartGameWithFirstPlayerIfDrawOnAllThreeCards() {
+        //player 0 has 3 of diamonds as lowest card
+        //player 0 has 4 of hearts as second weakest card
+        //player 0 has 8 of spades as strongest card
+        //player 1 has 3 of hearts as lowest card
+        //player 1 has 4 of diamonds as second weakest card
+        //player 1 has 8 of clubs as strongest card
+        //should pick player 0
+        String game = "2%0abghefcqU1jklmnopdH?stuvwxyzABCDEFGTIJKLMNOPQRSriVWXYZ?!";
+        Game.InstructionResult started = Game.startGame(game);
+        Assert.assertTrue("Did not correctly select player with weakest hand", started.game.charAt(1) == '0');
+    }
 }

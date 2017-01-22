@@ -1,9 +1,6 @@
 package game;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by samuelsmith on 1/2/17.
@@ -91,6 +88,37 @@ public class Game {
                 pile.add(Card.fromCharacter(c));
             }
         }
+    }
+
+    private String start() {
+        if (currentPlayer != -1) return "Unable to start game: already started";
+        currentPlayer = selectStartingPlayer();
+        return "Success";
+    }
+
+    private int selectStartingPlayer() {
+        Player startingPlayer = players[0];
+
+        for (int i = 1; i < players.length; i++) {
+            startingPlayer = weakestHand(startingPlayer, players[i]);
+        }
+
+        return startingPlayer.getPlayerNumber();
+    }
+
+    private Player weakestHand(Player player1, Player player2) {
+        Card p1c = player1.getNextWeakestCard(null);
+        Card p2c = player2.getNextWeakestCard(null);
+
+        while (p1c != null) {
+            if (p1c.getPower() == p2c.getPower()) {
+                p1c = player1.getNextWeakestCard(p1c);
+                p2c = player2.getNextWeakestCard(p2c);
+            } else if (p1c.getPower() < p2c.getPower()) return player1;
+            else if (p1c.getPower() > p2c.getPower()) return player2;
+        }
+
+        return player1;
     }
 
     private String move(int player, char[] cardsToPlay) {
@@ -184,12 +212,6 @@ public class Game {
 
             return "Success";
         } else return "Switch cannot be completed: player does not have the cards being switched";
-    }
-
-    private String start() {
-        if (currentPlayer != -1) return "Unable to start game: already started";
-        currentPlayer = 0;
-        return "Success";
     }
 
     @Override

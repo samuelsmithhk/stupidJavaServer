@@ -59,9 +59,13 @@ public class PlayerTest {
         Assert.assertEquals("Second shown card not expected", pStringArr[4], s2.toString());
         Assert.assertEquals("Third shown card not expected", pStringArr[5], s3.toString());
 
-        Assert.assertEquals("First hand card not expected", pStringArr[6], ha1.toString());
-        Assert.assertEquals("Second hand card not expected", pStringArr[7], ha2.toString());
-        Assert.assertEquals("Third hand card not expected", pStringArr[8], ha3.toString());
+        Card smallest = p.getNextWeakestCard(null);
+        Card middle = p.getNextWeakestCard(smallest);
+        Card strongest = p.getNextWeakestCard(middle);
+
+        Assert.assertEquals("First hand card not expected", pStringArr[6], smallest.toString());
+        Assert.assertEquals("Second hand card not expected", pStringArr[7], middle.toString());
+        Assert.assertEquals("Third hand card not expected", pStringArr[8], strongest.toString());
     }
 
     @Test
